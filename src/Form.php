@@ -71,6 +71,9 @@ class Form implements FormInterface
      */
     public function __construct($data = [])
     {
+        // Instantiate the Flash instance
+        $this->flash = Flash::getInstance();
+
         // Register the fields
         foreach ($data as $field => $options) {
             $this->addField($field, $options);
@@ -133,7 +136,7 @@ class Form implements FormInterface
      */
     public function old($key)
     {
-        $data = Flash::get(self::FLASH_KEY_DATA, []);
+        $data = $this->flash::get(self::FLASH_KEY_DATA, []);
 
         return isset($data[$key]) ? $data[$key] : '';
     }
@@ -174,7 +177,7 @@ class Form implements FormInterface
             }
         }
 
-        Flash::set(self::FLASH_KEY_DATA, $data);
+        $this->flash::set(self::FLASH_KEY_DATA, $data);
      }
 
     /**
@@ -203,7 +206,7 @@ class Form implements FormInterface
             $errors[$key] = $value;
         }
 
-        Flash::set(self::FLASH_KEY_ERRORS, $errors);
+        $this->flash::set(self::FLASH_KEY_ERRORS, $errors);
     }
 
     /**
@@ -213,7 +216,7 @@ class Form implements FormInterface
      */
     public function errors()
     {
-        return Flash::get(self::FLASH_KEY_ERRORS, []);
+        return $this->flash::get(self::FLASH_KEY_ERRORS, []);
     }
 
     /**
