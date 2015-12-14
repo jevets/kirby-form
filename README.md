@@ -71,6 +71,8 @@ This example assumes you're using [page controllers in Kirby](http://getkirby.co
 ```php
 // site/controllers/my-page.php
 
+use Jevets\Kirby\Form;
+
 return function ($site, $pages, $page) {
 
     // Initialize the Form
