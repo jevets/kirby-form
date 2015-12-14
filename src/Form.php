@@ -72,7 +72,7 @@ class Form implements FormInterface
     public function __construct($data = [])
     {
         // Instantiate the Flash instance
-        $this->flash = flash->getInstance();
+        $this->flash = Flash::getInstance();
 
         // Register the fields
         foreach ($data as $field => $options) {
