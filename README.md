@@ -1,6 +1,6 @@
 # Kirby Form
 
-A helper library for working with Kirby forms, using the GET/POST/GET request pattern.
+A helper library for working with Kirby forms, using the [Post/Redirect/Get](https://en.wikipedia.org/wiki/Post/Redirect/Get) design pattern.
 
 **Requires:** [Jevets\Kirby\Flash](https://github.com/jevets/kirby-flash) for storing error messages and submitted form data.
 
@@ -30,7 +30,13 @@ Require the package in your `composer.json` file:
 {
     "require": {
         "jevets\kirby-form": "dev-master"
-    }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/jevets/kirby-form.git"
+        }
+    ]
 }
 ```
 
