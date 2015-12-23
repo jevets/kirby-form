@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "jevets/kirby-flash": "dev-master"
+        "jevets/kirby-flash": "0.0.1"
     },
     "repositories": [
         {
