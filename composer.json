@@ -10,6 +10,7 @@
             "email": "steve@evendev.com"
         }
     ],
+    "minimum-stability": "dev",
     "require": {
         "jevets/kirby-flash": "dev-master"
     },
