@@ -11,12 +11,12 @@
         }
     ],
     "require": {
-        "jevets/kirby-flash": "0.0.1"
+        "jevets/kirby-flash": "dev-master"
     },
     "repositories": [
         {
-            "type": "git",
-            "url": "https://github.com/jevets/kirby-flash.git"
+            "type": "vcs",
+            "url": "https://github.com/jevets/kirby-flash"
         }
     ],
     "autoload": {
