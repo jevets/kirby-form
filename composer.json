@@ -15,8 +15,8 @@
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/jevets/kirby-flash"
+            "type": "git",
+            "url": "https://github.com/jevets/kirby-flash.git"
         }
     ],
     "autoload": {
