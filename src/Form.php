@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Jevets\Kirby;
 
@@ -224,18 +224,19 @@ class Form implements FormInterface
      *
      * If no key is provided, the first error will be returned.
      *
-     * @param  string  optional  $key
+     * @param  string  $key  optional
+     *
+     * @return  array
      */
     public function error($key = '')
     {
         $errors = $this->errors();
 
-        if ($key && isset($errors[$key]))
-            return $errors[$key];
+        if ($key) {
+            return isset($errors[$key]) ? $errors[$key] : [];
+        }
 
-        if (count($errors))
-            return $errors[0];
-
-        return [];
+        // Return first array element or an empty array if there is no first element.
+        return reset($errors) ?: [];
     }
 }
