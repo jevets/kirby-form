@@ -2,12 +2,21 @@
 
 namespace Jevets\Kirby;
 
+use C as Config;
 use R as Request;
 use Jevets\Kirby\Flash;
 use Jevets\Kirby\FormInterface;
+use Jevets\Kirby\Exceptions\TokenMismatchException;
 
 class Form implements FormInterface
 {
+    /**
+     * Name of the form field containing the CSRF token.
+     *
+     * @var string
+     */
+    const CSRF_FIELD = 'csrf_token';
+
     /**
      * Session key for errors
      *
@@ -128,10 +137,19 @@ class Form implements FormInterface
     /**
      * Validate the form
      *
+     * @throws TokenMismatchException If not in debug mode and the CSRF token is invalid
      * @return  boolean  whether the form validates
      */
     public function validates()
     {
+        if (csrf(Request::postData(self::CSRF_FIELD)) !== true) {
+            if (Config::get('debug') === true) {
+                throw new TokenMismatchException('The CSRF token was invalid.');
+            }
+
+            return false;
+        }
+
         $invalid = invalid($this->data, $this->rules, $this->messages);
 
         if ($invalid) {

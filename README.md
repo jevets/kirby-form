@@ -45,6 +45,7 @@ This example assumes you're using [page controllers in Kirby](http://getkirby.co
     <form method="POST">
         <input name="name" value="<?= $form->old('name') ?>">
         <input name="phone" value="<?= $form->old('phone') ?>">
+        <?= csrf_field() ?>
         <input type="submit" value="Submit">
     </form>
 

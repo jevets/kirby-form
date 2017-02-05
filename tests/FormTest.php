@@ -2,10 +2,18 @@
 
 namespace Jevets\Kirby\Form\Tests;
 
+use C as Config;
 use Jevets\Kirby\Form;
+use Jevets\Kirby\Exceptions\TokenMismatchException;
 
 class FormTest extends TestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+        $_POST['csrf_token'] = csrf();
+    }
+
     public function testData()
     {
         $_POST['test'] = 'value';
@@ -122,6 +130,30 @@ class FormTest extends TestCase
 
         $this->assertEquals(['Please enter something'], $form2->error('test'));
         $this->assertEmpty($form3->error('test'));
+    }
+
+    public function testValidateCsrfException()
+    {
+        Config::set('debug', true);
+        unset($_POST['csrf_token']);
+        $form = new Form;
+        $this->setExpectedException(TokenMismatchException::class);
+        $form->validates();
+    }
+
+    public function testValidateCsrfExceptionNoDebug()
+    {
+        Config::set('debug', false);
+        unset($_POST['csrf_token']);
+        $form = new Form;
+        $this->assertFalse($form->validates());
+    }
+
+    public function testValidateCsrfSuccess()
+    {
+        $form = new Form;
+        $_POST['csrf_token'] = csrf();
+        $this->assertTrue($form->validates());
     }
 }
 
