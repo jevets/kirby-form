@@ -2,6 +2,7 @@
 
 namespace Jevets\Kirby;
 
+use R as Request;
 use Jevets\Kirby\Flash;
 use Jevets\Kirby\FormInterface;
 
@@ -82,7 +83,7 @@ class Form implements FormInterface
         // Prepopulate the fields with old input data, if it exists
         foreach ($this->fields as $field => $attributes) {
             // Decode HTML entities that might have been encoded by $this->old()
-            $this->data[$field] = $this->decodeField(get($field));
+            $this->data[$field] = $this->decodeField(Request::postData($field));
         }
 
         // Get any errors from the Flash
@@ -101,32 +102,13 @@ class Form implements FormInterface
      */
     public function data($key = '', $value = '')
     {
-        if (!$key)
+        if (!$key) {
             return $this->data;
-
-        if (!!$key && !$value)
+        } elseif (!$value) {
             return isset($this->data[$key]) ? $this->data[$key] : '';
+        }
 
         $this->data[$key] = $value;
-    }
-
-    /**
-     * Register a field
-     *
-     * @param  string  $key
-     * @param  array  options
-     * @return void
-     */
-    public function addField($key, $options = [])
-    {
-        $this->fields[$key] = [
-            'name' => $key,
-            'id' => isset($options['id']) ? $options['id'] : $key,
-            'flash' => isset($options['flash']) ? $options['flash'] : true,
-        ];
-
-        $this->rules[$key] = isset($options['rules']) ? $options['rules'] : [];
-        $this->messages[$key] = isset($options['message']) ? $options['message'] : [];
     }
 
     /**
@@ -150,76 +132,15 @@ class Form implements FormInterface
      */
     public function validates()
     {
-        $invalid = invalid($this->data(), $this->rules, $this->messages);
+        $invalid = invalid($this->data, $this->rules, $this->messages);
 
-        if ($invalid)
-        {
+        if ($invalid) {
             $this->addErrors($invalid);
             $this->saveData();
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Save the form data to the session
-     *
-     * @return void
-     */
-     public function saveData()
-     {
-        $data = [];
-
-        foreach ($this->fields as $field => $options)
-        {
-            if (!!$options['flash'])
-            {
-                $data[$field] = $this->data($field);
-            }
-        }
-
-        $this->flash->set(self::FLASH_KEY_DATA, $data);
-     }
-
-    /**
-     * Add a single error
-     *
-     * @param  string  $key
-     * @param  mixed  optional  $value
-     * @return void
-     */
-    public function addError($key, $value = '')
-    {
-        $this->addErrors([$key => $value]);
-    }
-
-    /**
-     * Add errors
-     *
-     * Each error will be an array of error messages.
-     *
-     * @param  array  $data  Each item can be either a single error message that will be
-     *                       appended to the errors array of the key or it can be an
-     *                       array of error messages that will be merged with the errors
-     *                       array of the key.
-     * @return void
-     */
-    public function addErrors($data)
-    {
-        foreach ($data as $key => $value) {
-            if (!isset($this->errors[$key])) {
-                $this->errors[$key] = [];
-            }
-
-            if (is_array($value)) {
-                $this->errors[$key] = array_merge($this->errors[$key], $value);
-            } else {
-                $this->errors[$key][] = $value;
-            }
-        }
-
-        $this->saveErrors();
     }
 
     /**
@@ -251,6 +172,83 @@ class Form implements FormInterface
 
         // Return first array element or an empty array if there is no first element.
         return reset($errors) ?: [];
+    }
+
+    /**
+     * Add a single error
+     *
+     * @param  string  $key
+     * @param  mixed  optional  $value
+     * @return void
+     */
+    protected function addError($key, $value = '')
+    {
+        $this->addErrors([$key => $value]);
+    }
+
+    /**
+     * Add errors
+     *
+     * Each error will be an array of error messages.
+     *
+     * @param  array  $data  Each item can be either a single error message that will be
+     *                       appended to the errors array of the key or it can be an
+     *                       array of error messages that will be merged with the errors
+     *                       array of the key.
+     * @return void
+     */
+    protected function addErrors($data)
+    {
+        foreach ($data as $key => $value) {
+            if (!isset($this->errors[$key])) {
+                $this->errors[$key] = [];
+            }
+
+            if (is_array($value)) {
+                $this->errors[$key] = array_merge($this->errors[$key], $value);
+            } else {
+                $this->errors[$key][] = $value;
+            }
+        }
+
+        $this->saveErrors();
+    }
+
+    /**
+     * Save the form data to the session
+     *
+     * @return void
+     */
+     protected function saveData()
+     {
+        $data = [];
+
+        foreach ($this->fields as $field => $options) {
+            if ($options['flash']) {
+                $data[$field] = $this->data($field);
+            }
+        }
+
+        $this->flash->set(self::FLASH_KEY_DATA, $data);
+     }
+
+    /**
+     * Register a field
+     *
+     * @param  string  $key
+     * @param  array  options
+     * @return void
+     */
+    protected function addField($key, $options = [])
+    {
+        $this->fields[$key] = [
+            'name' => $key,
+            'id' => isset($options['id']) ? $options['id'] : $key,
+            'flash' => isset($options['flash']) ? $options['flash'] : true,
+        ];
+
+        $this->rules[$key] = isset($options['rules']) ? $options['rules'] : [];
+        $this->messages[$key] = isset($options['message']) ? $options['message'] : [];
     }
 
     /**
