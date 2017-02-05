@@ -98,6 +98,15 @@ class FormTest extends TestCase
         $form = new Form(['test' => []]);
         $this->assertEquals('<value>', $form->data('test'));
     }
+
+    public function testForget()
+    {
+        $_POST['test'] = 'value';
+        $form = new Form(['test' => []]);
+        $this->assertEquals('value', $form->data('test'));
+        $form->forget('test');
+        $this->assertEmpty($form->data('test'));
+    }
 }
 
 class FormStub extends Form

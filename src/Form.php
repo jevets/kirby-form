@@ -144,6 +144,16 @@ class Form implements FormInterface
     }
 
     /**
+     * Forget a form field
+     *
+     * @param  string $key Form field name
+     */
+    public function forget($key)
+    {
+        unset($this->data[$key]);
+    }
+
+    /**
      * Get all errors
      *
      * @return  array

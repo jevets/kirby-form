@@ -40,6 +40,13 @@ interface FormInterface
     public function validates();
 
     /**
+     * Forget a form field
+     *
+     * @param  string $key Form field name
+     */
+    public function forget($key);
+
+    /**
      * Get all errors
      *
      * @return  array
