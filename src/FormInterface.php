@@ -7,10 +7,11 @@ interface FormInterface
     /**
      * Create a new instance
      *
-     * @param  array  $data
+     * @param  array  $rules
+     * @param string $sessionKey´
      * @return void
      */
-    public function __construct($data = []);
+    public function __construct($rules = [], $sessionKey = null);
 
     /**
      * Get or set form data

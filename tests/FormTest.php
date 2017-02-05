@@ -107,6 +107,22 @@ class FormTest extends TestCase
         $form->forget('test');
         $this->assertEmpty($form->data('test'));
     }
+
+    public function testMultipleInstances()
+    {
+        $form = new Form(['test' => [
+            'rules' => ['required'],
+            'message' => ['Please enter something'],
+        ]]);
+
+        $form->validates();
+
+        $form2 = new Form(['test' => []]);
+        $form3 = new Form(['test' => []], 'other_form');
+
+        $this->assertEquals(['Please enter something'], $form2->error('test'));
+        $this->assertEmpty($form3->error('test'));
+    }
 }
 
 class FormStub extends Form
