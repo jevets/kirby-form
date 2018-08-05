@@ -2,9 +2,8 @@
 
 namespace Jevets\Kirby;
 
-use L as Lang;
-use C as Config;
-use R as Request;
+use Kirby\Cms\App;
+use Kirby\Toolkit\I18n;
 use Jevets\Kirby\Flash;
 use Jevets\Kirby\FormInterface;
 use Jevets\Kirby\Exceptions\TokenMismatchException;
@@ -83,6 +82,7 @@ class Form implements FormInterface
      */
     public function __construct($rules = [], $sessionKey = null)
     {
+        $request = App::instance()->request();
         // Instantiate the Flash instance
         $this->flash = $sessionKey ? new Flash($sessionKey) : Flash::getInstance();
 
@@ -97,10 +97,10 @@ class Form implements FormInterface
                 if (in_array('required', $this->rules[$field])) {
                     $this->rules[$field][array_search('file', $this->rules[$field])] = 'requiredFile';
                 }
-                $this->data[$field] = Request::files($field);
+                $this->data[$field] = $request->files()->get($field);
             } else {
                 // Decode HTML entities that might have been encoded by $this->old()
-                $this->data[$field] = $this->decodeField(Request::postData($field));
+                $this->data[$field] = $this->decodeField($request->body()->get($field));
             }
         }
 
@@ -151,18 +151,20 @@ class Form implements FormInterface
      */
     public function validates()
     {
-        if (csrf(Request::postData(self::CSRF_FIELD)) !== true) {
-            if (Config::get('debug') === true) {
+        $app = App::instance();
+
+        if (csrf($app->request()->body()->get(self::CSRF_FIELD)) !== true) {
+            if ($app->option('debug', false) === true) {
                 throw new TokenMismatchException('The CSRF token was invalid.');
             }
-
-            $this->addError(self::CSRF_FIELD, Lang::get('form-csrf-expired', 'Your session timed out. Please submit the form again.'));
+            $this->addError(self::CSRF_FIELD, I18n::translate('form-csrf-expired', 'Your session timed out. Please submit the form again.'));
             $this->saveData();
 
             return false;
         }
 
-        $invalid = invalid($this->data, $this->rules, $this->messages);
+        $validator = new Validator($this->data, $this->rules, $this->messages);
+        $invalid = $validator->validate();
 
         if ($invalid) {
             $this->addErrors($invalid);

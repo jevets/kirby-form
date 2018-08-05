@@ -27,8 +27,11 @@ if ($form->validates()) {
 
 Install with composer:
 
-```
-composer require mzur/kirby-form
+```bash
+# Kirby 2
+composer require mzur/kirby-form:^1.0
+# Kirby 3
+composer require mzur/kirby-form:^2.0
 ```
 
 ## Basic Example
@@ -69,7 +72,7 @@ This example assumes you're using [page controllers in Kirby](http://getkirby.co
 
 use Jevets\Kirby\Form;
 
-return function ($site, $pages, $page) {
+return function ($page, $site, $kirby) {
 
     // Initialize the Form
     $form = new Form([
@@ -81,7 +84,7 @@ return function ($site, $pages, $page) {
     ]);
 
     // Process the form on POST requests
-    if (r::is('POST')) {
+    if ($kirby->request()->is('POST')) {
         if ($form->validates()) {
             // Show a thanks page
         } else {

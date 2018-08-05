@@ -2,7 +2,8 @@
 
 namespace Jevets\Kirby\Form\Tests;
 
-use v;
+use Kirby\Toolkit\V;
+use Jevets\Kirby\Validator;
 
 class HelperTest extends TestCase
 {
@@ -20,7 +21,7 @@ class HelperTest extends TestCase
 
     public function testFileValidator()
     {
-        $this->assertTrue(v::file([
+        $this->assertTrue(V::file([
             'name' => 'testname',
             'type' => 'text/plain',
             'size' => 0,
@@ -28,7 +29,7 @@ class HelperTest extends TestCase
             'error' => UPLOAD_ERR_OK,
         ]));
 
-        $this->assertTrue(v::file([
+        $this->assertTrue(V::file([
             'name' => 'testname',
             'type' => 'text/plain',
             'size' => 0,
@@ -36,35 +37,35 @@ class HelperTest extends TestCase
             'error' => UPLOAD_ERR_NO_FILE,
         ]));
 
-        $this->assertFalse(v::file([
+        $this->assertFalse(V::file([
             'type' => 'text/plain',
             'size' => 0,
             'tmp_name' => 'qwert',
             'error' => UPLOAD_ERR_OK,
         ]));
 
-        $this->assertFalse(v::file([
+        $this->assertFalse(V::file([
             'name' => 'testname',
             'size' => 0,
             'tmp_name' => 'qwert',
             'error' => UPLOAD_ERR_OK,
         ]));
 
-        $this->assertFalse(v::file([
+        $this->assertFalse(V::file([
             'name' => 'testname',
             'type' => 'text/plain',
             'tmp_name' => 'qwert',
             'error' => UPLOAD_ERR_OK,
         ]));
 
-        $this->assertFalse(v::file([
+        $this->assertFalse(V::file([
             'name' => 'testname',
             'type' => 'text/plain',
             'size' => 0,
             'error' => UPLOAD_ERR_OK,
         ]));
 
-        $this->assertFalse(v::file([
+        $this->assertFalse(V::file([
             'name' => 'testname',
             'type' => 'text/plain',
             'size' => 0,
@@ -81,7 +82,7 @@ class HelperTest extends TestCase
         ];
 
         foreach ($codes as $code) {
-            $this->assertFalse(v::file([
+            $this->assertFalse(V::file([
                 'name' => 'testname',
                 'type' => 'text/plain',
                 'size' => 0,
@@ -93,7 +94,7 @@ class HelperTest extends TestCase
 
     public function testRequiredFileValidator()
     {
-        $this->assertTrue(v::requiredFile([
+        $this->assertTrue(V::requiredFile([
             'name' => 'testname',
             'type' => 'text/plain',
             'size' => 0,
@@ -101,7 +102,7 @@ class HelperTest extends TestCase
             'error' => UPLOAD_ERR_OK,
         ]));
 
-        $this->assertFalse(v::requiredFile([
+        $this->assertFalse(V::requiredFile([
             'name' => 'testname',
             'type' => 'text/plain',
             'size' => 0,
@@ -112,38 +113,38 @@ class HelperTest extends TestCase
 
     public function testFilesizeValidator()
     {
-        $this->assertTrue(v::filesize(['size' => 9000, 'error' => UPLOAD_ERR_OK], 9));
-        $this->assertFalse(v::filesize(['size' => 9000, 'error' => UPLOAD_ERR_OK], 8));
+        $this->assertTrue(V::filesize(['size' => 9000, 'error' => UPLOAD_ERR_OK], 9));
+        $this->assertFalse(V::filesize(['size' => 9000, 'error' => UPLOAD_ERR_OK], 8));
         // If no file was uploaded, validation should still pass.
-        $this->assertTrue(v::filesize(['size' => 9000, 'error' => UPLOAD_ERR_NO_FILE], 8));
-        $this->assertFalse(v::filesize([], 8));
-        $this->assertFalse(v::filesize('asdf', 8));
+        $this->assertTrue(V::filesize(['size' => 9000, 'error' => UPLOAD_ERR_NO_FILE], 8));
+        $this->assertFalse(V::filesize([], 8));
+        $this->assertFalse(V::filesize('asdf', 8));
     }
 
     public function testMimeValidator()
     {
         // This works without an actual file because the Toolkit guesses the MIME by
         // file extension in this case.
-        $this->assertTrue(v::mime(['tmp_name' => 'test.txt', 'error' => UPLOAD_ERR_OK], ['text/plain']));
+        $this->assertTrue(V::mime(['tmp_name' => 'test.txt', 'error' => UPLOAD_ERR_OK], ['text/plain']));
         // If no file was uploaded, validation should still pass.
-        $this->assertTrue(v::mime(['tmp_name' => 'test.json', 'error' => UPLOAD_ERR_NO_FILE], ['text/plain']));
-        $this->assertTrue(v::mime('test.txt', ['text/plain']));
-        $this->assertFalse(v::mime('test.txt', ['image/png']));
+        $this->assertTrue(V::mime(['tmp_name' => 'test.json', 'error' => UPLOAD_ERR_NO_FILE], ['text/plain']));
+        $this->assertTrue(V::mime('test.txt', ['text/plain']));
+        $this->assertFalse(V::mime('test.txt', ['image/png']));
         // Test handling of non-array argument through invalid().
-        $r = invalid(['file' => 'test.txt'], ['file' => ['mime' => ['text/plain']]]);
-        $this->assertEquals([], $r);
+        $validator = new Validator(['file' => 'test.txt'], ['file' => ['mime' => ['text/plain']]]);
+        $this->assertEquals([], $validator->validate());
     }
 
     public function testImageValidator()
     {
         $path = sys_get_temp_dir().'/kirby_test_image';
         file_put_contents($path, 'sometext');
-        $this->assertFalse(v::image($path));
+        $this->assertFalse(V::image($path));
         // This is a GIF: http://probablyprogramming.com/2009/03/15/the-tiniest-gif-ever
         file_put_contents($path, base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='));
-        $this->assertTrue(v::image($path));
-        $this->assertTrue(v::image(['tmp_name' => $path, 'error' => UPLOAD_ERR_OK]));
-        $this->assertTrue(v::image(['tmp_name' => '', 'error' => UPLOAD_ERR_NO_FILE]));
+        $this->assertTrue(V::image($path));
+        $this->assertTrue(V::image(['tmp_name' => $path, 'error' => UPLOAD_ERR_OK]));
+        $this->assertTrue(V::image(['tmp_name' => '', 'error' => UPLOAD_ERR_NO_FILE]));
         unlink($path);
     }
 }

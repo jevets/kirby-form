@@ -1,5 +1,6 @@
 <?php
 
+use Kirby\Toolkit\V;
 use Jevets\Kirby\Form;
 
 if (!function_exists('csrf_field')) {
@@ -23,9 +24,9 @@ if (!function_exists('csrf_field')) {
     }
 }
 
-if (class_exists('v')) {
+if (class_exists(V::class)) {
     // Extended validation rules for file uploads.
-    v::$validators['file'] = function ($value) {
+    V::$validators['file'] = function ($value) {
         return is_array($value) &&
             array_key_exists('name', $value) &&
             array_key_exists('type', $value) &&
@@ -35,11 +36,11 @@ if (class_exists('v')) {
                 ($value['error'] === UPLOAD_ERR_OK || $value['error'] === UPLOAD_ERR_NO_FILE);
     };
 
-    v::$validators['requiredFile'] = function ($value) {
-        return v::file($value) && $value['error'] === UPLOAD_ERR_OK;
+    V::$validators['requiredFile'] = function ($value) {
+        return V::file($value) && $value['error'] === UPLOAD_ERR_OK;
     };
 
-    v::$validators['filesize'] = function ($value, $size) {
+    V::$validators['filesize'] = function ($value, $size) {
         // $size is in kb and $value['size'] is in byte, so multiply by 1000
         return is_array($value) &&
             array_key_exists('size', $value) &&
@@ -47,7 +48,7 @@ if (class_exists('v')) {
             (($value['size'] <= $size * 1000) || $value['error'] === UPLOAD_ERR_NO_FILE);
     };
 
-    v::$validators['mime'] = function ($value, $allowed) {
+    V::$validators['mime'] = function ($value, $allowed) {
         if (!is_array($allowed)) {
             $allowed = array_slice(func_get_args(), 1);
         }
@@ -66,7 +67,7 @@ if (class_exists('v')) {
         return false;
     };
 
-    v::$validators['image'] = function ($value) {
+    V::$validators['image'] = function ($value) {
         if (is_string($value)) {
           $name = $value;
         } elseif (is_array($value) && array_key_exists('tmp_name', $value)  && array_key_exists('error', $value)) {

@@ -2,7 +2,7 @@
 
 namespace Jevets\Kirby\Form\Tests;
 
-use C as Config;
+use Kirby\Cms\App;
 use Jevets\Kirby\Form;
 use Jevets\Kirby\Exceptions\TokenMismatchException;
 
@@ -38,15 +38,21 @@ class FormTest extends TestCase
         $this->assertEquals('&lt;value&gt;', $form->old('test'));
     }
 
-    public function testValidates()
+    public function testValidatesMissing()
     {
         $form = new Form(['test' => ['rules' => ['required', 'num']]]);
         $this->assertFalse($form->validates());
+    }
 
+    public function testValidatesFalse()
+    {
         $_POST['test'] = 'abc';
         $form = new Form(['test' => ['rules' => ['required', 'num']]]);
         $this->assertFalse($form->validates());
+    }
 
+    public function testValidatesTrue()
+    {
         $_POST['test'] = '123';
         $form = new Form(['test' => ['rules' => ['required', 'num']]]);
         $this->assertTrue($form->validates());
@@ -144,17 +150,19 @@ class FormTest extends TestCase
 
     public function testValidateCsrfException()
     {
-        Config::set('debug', true);
         unset($_POST['csrf_token']);
+        App::instance(new SessionTestApp(['options' => ['debug' => true]]));
+        csrf();
         $form = new Form;
-        $this->setExpectedException(TokenMismatchException::class);
+        $this->expectException(TokenMismatchException::class);
         $form->validates();
     }
 
     public function testValidateCsrfExceptionNoDebug()
     {
-        Config::set('debug', false);
         unset($_POST['csrf_token']);
+        App::instance(new SessionTestApp(['options' => ['debug' => false]]));
+        csrf();
         $form = new Form;
         $this->assertFalse($form->validates());
     }
@@ -168,9 +176,14 @@ class FormTest extends TestCase
 
     public function testFileField()
     {
-        $_FILES['filefield'] = 'myfile.txt';
+        $_FILES['filefield'] = [
+            'name' => 'testname',
+            'type' => 'text/plain',
+            'size' => 10,
+            'tmp_name' => 'qwert',
+        ];
         $form = new Form(['filefield' => ['rules' => ['file']]]);
-        $this->assertEquals('myfile.txt', $form->data('filefield'));
+        $this->assertEquals($_FILES['filefield'], $form->data('filefield'));
     }
 
     public function testFileFieldEmpty()
@@ -192,7 +205,7 @@ class FormTest extends TestCase
         $this->assertTrue($form->validates());
     }
 
-    public function testFileFieldValidateRequired()
+    public function testFileFieldValidateRequiredNoFile()
     {
         $_FILES['filefield'] = [
             'name' => 'testname',
@@ -203,7 +216,10 @@ class FormTest extends TestCase
         ];
         $form = new Form(['filefield' => ['rules' => ['required', 'file']]]);
         $this->assertFalse($form->validates());
+    }
 
+    public function testFileFieldValidateRequiredOk()
+    {
         $_FILES['filefield'] = [
             'name' => 'testname',
             'type' => 'text/plain',
