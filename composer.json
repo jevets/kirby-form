@@ -16,7 +16,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "mzur/kirby-flash": "dev-master",
+        "mzur/kirby-flash": "@beta",
         "getkirby/cms": "dev-develop"
     },
     "autoload": {
