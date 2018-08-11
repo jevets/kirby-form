@@ -170,7 +170,6 @@ class FormTest extends TestCase
     public function testValidateCsrfMissing()
     {
         unset($_POST['csrf_token']);
-        // Defuse::defuse();
         $form = new Form;
         $this->assertFalse($form->validates());
     }
