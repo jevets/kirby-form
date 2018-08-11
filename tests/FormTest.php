@@ -167,6 +167,23 @@ class FormTest extends TestCase
         $this->assertFalse($form->validates());
     }
 
+    public function testValidateCsrfMissing()
+    {
+        unset($_POST['csrf_token']);
+        // Defuse::defuse();
+        $form = new Form;
+        $this->assertFalse($form->validates());
+    }
+
+    public function testValidateCsrfMissingDebug()
+    {
+        unset($_POST['csrf_token']);
+        Defuse::defuse(['options' => ['debug' => true]]);
+        $form = new Form;
+        $this->expectException(TokenMismatchException::class);
+        $form->validates();
+    }
+
     public function testValidateCsrfSuccess()
     {
         $form = new Form;
