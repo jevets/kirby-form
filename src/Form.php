@@ -100,7 +100,7 @@ class Form implements FormInterface
                 $this->data[$field] = $request->files()->get($field);
             } else {
                 // Decode HTML entities that might have been encoded by $this->old()
-                $this->data[$field] = $this->decodeField($request->body()->get($field));
+                $this->data[$field] = trim($this->decodeField($request->body()->get($field)));
             }
         }
 
@@ -126,7 +126,7 @@ class Form implements FormInterface
             return isset($this->data[$key]) ? $this->data[$key] : '';
         }
 
-        $this->data[$key] = $value;
+        $this->data[$key] = trim($value);
     }
 
     /**
