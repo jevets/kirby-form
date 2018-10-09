@@ -1,3 +1,9 @@
+# NOT MAINTAINED
+
+Try https://github.com/mzur/kirby-form instead, which was based on my original plugin.
+
+---
+
 # Kirby Form
 
 A helper library for working with Kirby forms, using the [Post/Redirect/Get](https://en.wikipedia.org/wiki/Post/Redirect/Get) design pattern.
