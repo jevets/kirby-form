@@ -132,6 +132,15 @@ class FormTest extends TestCase
         $this->assertEquals('value', $form->data('key'));
     }
 
+    public function testTrimWhitespaceArray()
+    {
+        $_POST['test'] = [' value1', 'value2 '];
+        $form = new Form(['test' => []]);
+        $form->data('key', [' value1', 'value2 ']);
+        $this->assertEquals(['value1', 'value2'], $form->data('test'));
+        $this->assertEquals(['value1', 'value2'], $form->data('key'));
+    }
+
     public function testForget()
     {
         $_POST['test'] = 'value';
