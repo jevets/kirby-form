@@ -219,7 +219,6 @@ class Form implements FormInterface
         return reset($errors) ?: [];
     }
 
-
     /**
      * Get fields by key
      *
