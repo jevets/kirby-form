@@ -357,7 +357,7 @@ class Form implements FormInterface
      */
     public function fields($key = '')
     {
-        $fields = $this->fields();
+        $fields = $this->fields;
 
         if ($key) {
             return isset($fields[$key]) ? $fields[$key] : [];
@@ -377,7 +377,7 @@ class Form implements FormInterface
      */
     public function rules($key = '')
     {
-        $rules = $this->rules();
+        $rules = $this->rules;
 
         if ($key) {
             return isset($rules[$key]) ? $rules[$key] : [];
@@ -397,7 +397,7 @@ class Form implements FormInterface
      */
     public function messages($key = '')
     {
-        $messages = $this->messages();
+        $messages = $this->messages;
 
         if ($key) {
             return isset($messages[$key]) ? $messages[$key] : [];
