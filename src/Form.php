@@ -219,6 +219,67 @@ class Form implements FormInterface
         return reset($errors) ?: [];
     }
 
+
+    /**
+     * Get fields by key
+     *
+     * If no key is provided, all fields will be returned.
+     *
+     * @param  string  $key  optional
+     *
+     * @return  array
+     */
+    public function fields($key = '')
+    {
+        $fields = $this->fields;
+
+        if ($key) {
+            return isset($fields[$key]) ? $fields[$key] : [];
+        }
+
+        return $fields;
+    }
+
+    /**
+     * Get rules by key
+     *
+     * If no key is provided, all rules will be returned.
+     *
+     * @param  string  $key  optional
+     *
+     * @return  array
+     */
+    public function rules($key = '')
+    {
+        $rules = $this->rules;
+
+        if ($key) {
+            return isset($rules[$key]) ? $rules[$key] : [];
+        }
+
+        return $rules;
+    }
+
+    /**
+     * Get messages by key
+     *
+     * If no key is provided, all messages will be returned.
+     *
+     * @param  string  $key  optional
+     *
+     * @return  array
+     */
+    public function messages($key = '')
+    {
+        $messages = $this->messages;
+
+        if ($key) {
+            return isset($messages[$key]) ? $messages[$key] : [];
+        }
+
+        return $messages;
+    }
+
     /**
      * Add a single error
      *
@@ -344,65 +405,5 @@ class Form implements FormInterface
         return is_array($data)
             ? array_map('trim', $data)
             : trim($data);
-    }
-
-    /**
-     * Get fields by key
-     *
-     * If no key is provided, all fields will be returned.
-     *
-     * @param  string  $key  optional
-     *
-     * @return  array
-     */
-    public function fields($key = '')
-    {
-        $fields = $this->fields;
-
-        if ($key) {
-            return isset($fields[$key]) ? $fields[$key] : [];
-        }
-
-        return $fields;
-    }
-
-    /**
-     * Get rules by key
-     *
-     * If no key is provided, all rules will be returned.
-     *
-     * @param  string  $key  optional
-     *
-     * @return  array
-     */
-    public function rules($key = '')
-    {
-        $rules = $this->rules;
-
-        if ($key) {
-            return isset($rules[$key]) ? $rules[$key] : [];
-        }
-
-        return $rules;
-    }
-
-    /**
-     * Get messages by key
-     *
-     * If no key is provided, all messages will be returned.
-     *
-     * @param  string  $key  optional
-     *
-     * @return  array
-     */
-    public function messages($key = '')
-    {
-        $messages = $this->messages;
-
-        if ($key) {
-            return isset($messages[$key]) ? $messages[$key] : [];
-        }
-
-        return $messages;
     }
 }
