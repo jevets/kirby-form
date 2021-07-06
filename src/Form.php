@@ -3,6 +3,7 @@
 namespace Jevets\Kirby;
 
 use Kirby\Cms\App;
+use Kirby\Toolkit\Escape;
 use Kirby\Toolkit\I18n;
 use Jevets\Kirby\Flash;
 use Jevets\Kirby\FormInterface;
@@ -101,7 +102,7 @@ class Form implements FormInterface
             } else {
                 // Decode HTML entities that might have been encoded by $this->old()
                 $data = $this->decodeField($request->body()->get($field));
-                $this->data[$field] = $this->trimWhitespace($data);
+                $this->data[$field] = $this->trimWhitespaceAndEscape($data);
             }
         }
 
@@ -127,7 +128,7 @@ class Form implements FormInterface
             return isset($this->data[$key]) ? $this->data[$key] : '';
         }
 
-        $this->data[$key] = $this->trimWhitespace($value);
+        $this->data[$key] = $this->trimWhitespaceAndEscape($value);
     }
 
     /**
@@ -396,13 +397,17 @@ class Form implements FormInterface
      * Trim whitespace from input data
      *
      * @param string|array $data
-     *
+     * @param bool $escape
      * @return string|array
      */
-    protected function trimWhitespace($data)
+    protected function trimWhitespaceAndEscape($data)
     {
-        return is_array($data)
+        $data = is_array($data)
             ? array_map('trim', $data)
             : trim($data);
+
+        return is_array($data)
+            ? array_map('Kirby\Toolkit\Escape::html', $data)
+            : Escape::html($data);
     }
 }
