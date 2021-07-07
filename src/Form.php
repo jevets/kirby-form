@@ -102,7 +102,7 @@ class Form implements FormInterface
             } else {
                 // Decode HTML entities that might have been encoded by $this->old()
                 $data = $this->decodeField($request->body()->get($field));
-                $this->data[$field] = $this->trimWhitespaceAndEscape($data);
+                $this->data[$field] = $this->trimWhitespace($data);
             }
         }
 
@@ -117,18 +117,24 @@ class Form implements FormInterface
      * for the key will be returned. Otherwise, all
      * data will be returned.
      *
-     * @param  string  optional  $key
+     * @param string $key
+     * @param string $value
+     * @param bool $escape
      * @return mixed|array
      */
-    public function data($key = '', $value = '')
+    public function data($key = '', $value = '', $escape = true)
     {
         if ($key === '') {
-            return $this->data;
+            return $escape ? array_map([$this, 'encodeField'], $this->data) : $this->data;
         } elseif ($value === '') {
-            return isset($this->data[$key]) ? $this->data[$key] : '';
+            if (! isset($this->data[$key])) {
+                return '';
+            }
+
+            return $escape ? $this->encodeField($this->data[$key]) : $this->data[$key];
         }
 
-        $this->data[$key] = $this->trimWhitespaceAndEscape($value);
+        $this->data[$key] = $this->trimWhitespace($value);
     }
 
     /**
@@ -399,14 +405,10 @@ class Form implements FormInterface
      * @param string|array $data
      * @return string|array
      */
-    protected function trimWhitespaceAndEscape($data)
+    protected function trimWhitespace($data)
     {
-        $data = is_array($data)
+        return is_array($data)
             ? array_map('trim', $data)
             : trim($data);
-
-        return is_array($data)
-            ? array_map('Kirby\Toolkit\Escape::html', $data)
-            : Escape::html($data);
     }
 }
