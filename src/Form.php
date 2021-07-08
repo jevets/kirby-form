@@ -3,7 +3,6 @@
 namespace Jevets\Kirby;
 
 use Kirby\Cms\App;
-use Kirby\Toolkit\Escape;
 use Kirby\Toolkit\I18n;
 use Jevets\Kirby\Flash;
 use Jevets\Kirby\FormInterface;
