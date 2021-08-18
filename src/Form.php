@@ -401,6 +401,7 @@ class Form implements FormInterface
      * Trim whitespace from input data
      *
      * @param string|array $data
+     *
      * @return string|array
      */
     protected function trimWhitespace($data)
