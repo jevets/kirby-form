@@ -146,8 +146,7 @@ class Form implements FormInterface
     {
         $data = $this->flash->get(self::FLASH_KEY_DATA, []);
 
-        // Encode HTML entities for output
-        return isset($data[$key]) ? $this->encodeField($data[$key]) : '';
+        return isset($data[$key]) ? $data[$key] : '';
     }
 
     /**
