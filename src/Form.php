@@ -146,7 +146,7 @@ class Form implements FormInterface
     {
         $data = $this->flash->get(self::FLASH_KEY_DATA, []);
 
-        return isset($data[$key]) ? $data[$key] : '';
+        return isset($data[$key]) ? $this->encodeField($data[$key]) : '';
     }
 
     /**
@@ -335,7 +335,7 @@ class Form implements FormInterface
 
         foreach ($this->fields as $field => $options) {
             if ($options['flash']) {
-                $data[$field] = $this->data($field);
+                $data[$field] = $this->data($field, '', false);
             }
         }
 
